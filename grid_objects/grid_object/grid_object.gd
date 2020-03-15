@@ -10,6 +10,7 @@ var navigation_weight: float = 1.0
 var height_level: int = Height.BLOCK
 
 var turn_moves: int = 1
+var object_name: String = "Object"
 
 func turn_started() -> void:
 	Scheduler.go_next()

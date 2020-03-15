@@ -28,12 +28,18 @@ _global_script_classes=[ {
 "class": "Human",
 "language": "GDScript",
 "path": "res://characters/human/human.gd"
+}, {
+"base": "GridObject",
+"class": "Item",
+"language": "GDScript",
+"path": "res://items/item.gd"
 } ]
 _global_script_class_icons={
 "Character": "",
 "Door": "",
 "GridObject": "",
-"Human": ""
+"Human": "",
+"Item": ""
 }
 
 [application]
@@ -138,9 +144,20 @@ close={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":67,"unicode":0,"echo":false,"script":null)
  ]
 }
+grab={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":71,"unicode":0,"echo":false,"script":null)
+ ]
+}
+drop={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":68,"unicode":0,"echo":false,"script":null)
+ ]
+}
 
 [rendering]
 
 quality/2d/use_pixel_snap=true
 environment/default_clear_color=Color( 0.0509804, 0.054902, 0.0588235, 1 )
 environment/default_environment="res://default_env.tres"
+quality/dynamic_fonts/use_oversampling=false

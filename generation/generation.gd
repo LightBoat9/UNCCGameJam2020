@@ -3,13 +3,27 @@ extends Node2D
 func init_generation():
 	for dy in range(Constants.DISTRICT_SIZE.y):
 		for dx in range(Constants.DISTRICT_SIZE.x):
-			for by in range(Constants.ROAD_WIDTH, Constants.BLOCK_SIZE.y):
-				for bx in range(Constants.ROAD_WIDTH, Constants.BLOCK_SIZE.x):
-					if by == Constants.ROAD_WIDTH or by == Constants.BLOCK_SIZE.y-1 or \
-						bx == Constants.ROAD_WIDTH or bx == Constants.BLOCK_SIZE.x-1:
-							Globals.wall_tiles.set_cellv(Vector2(dx, dy) * \
-								Constants.BLOCK_SIZE + Vector2(bx, by), 0)
+			var block = random_block_preset()
+			for by in range(Constants.BLOCK_SIZE.y):
+				for bx in range(Constants.BLOCK_SIZE.x):
+					var pos = Vector2(dx, dy) * Constants.BLOCK_SIZE + Constants.ROAD_SIZE + Vector2(bx, by)
+					
+					Globals.floor_tiles.set_cellv(pos, \
+						block["floor"][bx + by * Constants.BLOCK_SIZE.x])
+						
+					Globals.wall_tiles.set_cellv(pos, \
+						block["walls"][bx + by * Constants.BLOCK_SIZE.x])
+						
+					if block["objects"].has("(%d, %d)" % [bx, by]):
+						var ids = block["objects"]["(%d, %d)" % [bx, by]]
+						for id in ids:
+							var inst = load(id).instance()
+							inst.grid_position = pos
+							Globals.floor_tiles.add_child(inst)
 								
 	var r = Globals.floor_tiles.get_used_rect()
 	
 	Globals.wall_tiles.update_bitmask_region(r.position, r.position + r.size)
+	
+func random_block_preset() -> Array:
+	return Globals.block_presets[randi() % Globals.block_presets.size()]

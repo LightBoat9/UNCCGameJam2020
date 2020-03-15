@@ -1,9 +1,11 @@
 extends Node2D
 
-var a_star: AStar2D = AStar2D.new()
+var a_star: AStar2D
 	
 func init_navigation():
-	var r = Globals.floor_tiles.get_used_rect()
+	a_star = AStar2D.new()
+	
+	var r = Globals.road_tiles.get_used_rect()
 	
 	a_star.reserve_space(r.size.x * r.size.y)
 	for y in range(r.position.y, r.position.y + r.size.y):
@@ -31,7 +33,7 @@ func init_navigation():
 						a_star.connect_points(i, p)
 						
 func get_cell_id(pos: Vector2) -> int:
-	var r = Globals.floor_tiles.get_used_rect()
+	var r = Globals.road_tiles.get_used_rect()
 	var offset = pos - r.position
 	return int(offset.x + offset.y * r.size.x)
 	

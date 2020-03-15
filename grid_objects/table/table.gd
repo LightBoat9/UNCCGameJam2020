@@ -1,0 +1,19 @@
+extends GridObject
+
+const ITEMS: Array = [
+	preload("res://items/bat/Bat.tscn"),
+]
+
+func _init():
+	object_name = "table"
+	height_level = Height.CLIMB
+	
+func _ready():
+	_spawn_item()
+	
+func _spawn_item():
+	if randf() <= 0.5:
+		var item = ITEMS[randi() % ITEMS.size()]
+		var inst = item.instance()
+		get_parent().add_child(inst)
+		inst.grid_position = grid_position
