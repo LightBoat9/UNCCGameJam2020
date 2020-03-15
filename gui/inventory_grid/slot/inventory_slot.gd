@@ -3,7 +3,7 @@ extends Control
 const PANNEL = preload("res://gui/inventory_grid/slot/slot_panel.tres")
 const PANNEL_HIGHLIGHT = preload("res://gui/inventory_grid/slot/slot_panel_highlight.tres")
 
-var index: int = -1 setget set_index
+export var index: int = -1 setget set_index
 
 func set_equipped(eq: bool) -> void:
 	if eq:
@@ -16,4 +16,7 @@ func set_texture(tex: Texture) -> void:
 	
 func set_index(i: int) -> void:
 	index = i
-	$Label.text = str(i)
+	if index == -1:
+		$Label.text = ""
+	else:
+		$Label.text = str(i)

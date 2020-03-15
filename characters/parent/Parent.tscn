@@ -7,8 +7,8 @@
 
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 4 )
-shader_param/active = false
-shader_param/percentage = 1.0
+shader_param/active = true
+shader_param/percentage = 0.0
 
 [sub_resource type="Animation" id=2]
 resource_name = "morph"
@@ -58,5 +58,5 @@ script = ExtResource( 1 )
 material = SubResource( 1 )
 texture = ExtResource( 3 )
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="1"]
+[node name="AnimationPlayer" parent="." index="2"]
 anims/morph = SubResource( 2 )

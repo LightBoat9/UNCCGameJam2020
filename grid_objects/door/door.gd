@@ -23,5 +23,10 @@ func set_state(st: int) -> void:
 		State.CLOSED:
 			navigation_weight = 2.0
 	
-	Globals.game_root.update_cell_navigation(grid_position)
+	Globals.game_root.call_deferred("update_cell_navigation", grid_position)
 	
+func get_save_data() -> Dictionary:
+	return {"state": state}
+	
+func load_data(data: Dictionary) -> void:
+	self.state = data["state"]

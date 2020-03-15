@@ -1,4 +1,4 @@
-extends Item
+extends Weapon
 
 func _init().():
 	object_name = "bat"

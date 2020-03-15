@@ -6,34 +6,41 @@ var hp: int = max_hp setget set_hp
 
 var character_name: String = "Character"
 
-var can_open_doors: bool = true
+var can_open: bool = true
 
 var item_limit: int = 3
 var items: Array = []
 
-var equipped: Node = null setget set_equipped
+var equipped: Weapon = null setget set_equipped
 
 func _init():
 	add_to_group("character")
 
 func _draw() -> void:
-	if hp != max_hp:
+	if hp != max_hp and hp > 0:
 		draw_rect(Rect2(2, 0, 28, 2), Color(0.5, 0.1, 0.1))
 		draw_rect(Rect2(2, 0, 28 * (hp / float(max_hp)), 2), Color.red)
 
-func set_equipped(item: Node) -> void:
-	assert(item.is_in_group("items"))
+func set_equipped(item: Weapon) -> void:
 	equipped = item
 
 func can_add_item(itm: Node) -> bool:
 	return items.size() < item_limit
 
-func remove_item(item: Node) -> void:
+func get_damage() -> Vector2:
+	if equipped:
+		return equipped.get_damage()
+	
+	return Vector2(1, 2)
+
+func remove_item(item: Node, drop:=true) -> void:
 	if item == equipped:
-		equipped = null
+		self.equipped = null
 		
-	Globals.game_root.add_object(item, grid_position)
-	get_parent().add_child(item)
+	if drop:
+		Globals.game_root.add_object(item, grid_position)
+		get_parent().add_child(item)
+	
 	items.remove(items.find(item))
 
 func add_item(item: Node) -> void:
@@ -48,14 +55,28 @@ func turn_started() -> void:
 
 func interact(objs) -> void:
 	for obj in objs:
-		if obj.is_in_group("character"):
-			Globals.gui.get_logger().add_log("%s hits %s for %d damage" % [character_name, obj.character_name, 1])
-			obj.hp -= 1
+		if obj.is_in_group("character") and obj.hp > 0:
+			var dmg = get_damage()
+			var roll = int(rand_range(dmg.x, dmg.y+1))
+			Globals.gui.get_logger().add_log("%s hits %s for %d damage" % [character_name, obj.character_name, roll])
+			obj.hp -= roll
 			use_turn_move()
+			if equipped and randi() % 100 > equipped.durability:
+				if is_in_group("player"):
+					Globals.gui.get_logger().add_log("Your %s has broken!" % equipped.object_name)
+				equipped.queue_free()
+				remove_item(equipped, false)
 			return
-		elif obj is Door:
+		elif can_open and obj is Door and obj.state == Door.State.CLOSED:
 			obj.state = Door.State.OPEN
 			use_turn_move()
+			return
+		elif obj.is_in_group("items"):
+			add_item(obj)
+			use_turn_move()
+			return
+			
+	use_turn_move()
 
 func die() -> void:
 	Globals.game_root.remove_object(self)
@@ -78,7 +99,7 @@ func move(to: Vector2) -> void:
 				if on_climb:
 					Globals.gui.get_logger().add_log("Moving off of this %s is slow." % on_climb.object_name)
 				else:
-					Globals.gui.get_logger().add_log("Moving on to this %s is slow." % to_climb.object_name)
+					Globals.gui.get_logger().add_log("Moving onto this %s is slow." % to_climb.object_name)
 			Scheduler.go_next()
 		else:
 			use_turn_move()
@@ -102,7 +123,36 @@ func set_max_hp(mhp: int) -> void:
 	self.hp = hp
 	
 func set_hp(h: int) -> void:
-	hp = min(max_hp, h)
+	hp = max(0, min(max_hp, h))
 	update()
 	if hp <= 0:
 		die()
+	
+func get_save_data() -> Dictionary:
+	var data = .get_save_data()
+	
+	data["max_hp"] = max_hp
+	data["hp"] = hp
+	
+	data["items"] = []
+	for obj in items:
+		data["items"].append(obj.filename)
+		
+	if equipped:
+		data["equipped"] = items.find(equipped)
+	else:
+		data["equipped"] = -1
+	
+	return data
+	
+func load_data(data: Dictionary) -> void:
+	.load_data(data)
+	self.max_hp = data["max_hp"]
+	self.hp = data["hp"]
+	
+	for obj in data["items"]:
+		var inst = load(obj).instance()
+		add_item(inst)
+	
+	if data["equipped"] != -1 and data["equipped"] < items.size():
+		self.equipped = items[data["equipped"]]

@@ -28,7 +28,6 @@ margin_left = 1.0
 margin_top = 1.0
 margin_right = 31.0
 margin_bottom = 31.0
-expand = true
 
 [node name="Label" type="Label" parent="."]
 anchor_left = 1.0

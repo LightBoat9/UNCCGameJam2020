@@ -2,8 +2,9 @@ tool
 extends Node2D
 # Super hacky tool to create json files for block presets
 
-export var create_json: bool = false setget set_create_json
 export var json_name: String = ""
+export var create_json: bool = false setget set_create_json
+export var load_json: bool = false setget set_load_json
 
 var data: Dictionary = {}
 
@@ -34,10 +35,40 @@ func set_create_json(to: bool) -> void:
 		
 		var file = File.new()
 		var path = "res://blocks/presets/%s.json" % json_name
-		print(path)
 		
 		file.open(path, File.WRITE)
 		
 		file.store_string(to_json(data))
 		
 		file.close()
+	
+func set_load_json(to: bool) -> void:
+	if to:
+		var file = File.new()
+		var path = "res://blocks/presets/%s.json" % json_name
+		file.open(path, File.READ)
+		
+		data = parse_json(file.get_as_text())
+		
+		var flr = $Floor
+		var wls = $Walls
+	
+		for y in Constants.BLOCK_SIZE.y:
+			for x in Constants.BLOCK_SIZE.x:
+				flr.set_cell(x, y, data["floor"][x + y * Constants.BLOCK_SIZE.x])
+				wls.set_cell(x, y, data["walls"][x + y * Constants.BLOCK_SIZE.x])
+				
+		for obj in flr.get_children():
+			obj.queue_free()
+				
+		for key in data["objects"].keys():
+			for obj in data["objects"][key]:
+				var vals = key.split(',')
+				
+				var inst = load(obj).instance()
+				inst.global_position = Vector2(int(vals[0]), int(vals[1])) * Constants.GRID_SIZE
+				flr.add_child(inst)
+				inst.owner = self
+				
+		$Floor.update_bitmask_region(Vector2(0, 0), Constants.BLOCK_SIZE)
+		$Walls.update_bitmask_region(Vector2(0, 0), Constants.BLOCK_SIZE)

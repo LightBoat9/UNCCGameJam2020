@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://grid_objects/bookshelf/bookshelf.png" type="Texture" id=1]
+[ext_resource path="res://grid_objects/grid_object/GridObject.tscn" type="PackedScene" id=2]
+[ext_resource path="res://grid_objects/bookshelf/bookshelf.gd" type="Script" id=3]
+
+[node name="Bookshelf" instance=ExtResource( 2 )]
+script = ExtResource( 3 )
+
+[node name="Sprite" parent="." index="0"]
+texture = ExtResource( 1 )

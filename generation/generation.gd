@@ -20,6 +20,7 @@ func init_generation():
 							var inst = load(id).instance()
 							inst.grid_position = pos
 							Globals.floor_tiles.add_child(inst)
+							inst.first_generate()
 								
 	var r = Globals.floor_tiles.get_used_rect()
 	

@@ -27,7 +27,8 @@ func load_presets() -> void:
 	var file = File.new()
 	var dir = Directory.new()
 	
-	dir.change_dir("res://blocks/presets/")
+	dir.open("res://blocks/presets/")
+	dir.change_dir(".")
 	dir.list_dir_begin(true)
 	
 	var path = dir.get_next()
